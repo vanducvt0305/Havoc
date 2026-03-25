@@ -1,0 +1,38 @@
+name: Build Havoc Client
+on: 
+  workflow_dispatch: # Cho phép bạn nhấn nút Run thủ công
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      
+uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+      
+name: Install Dependencies
+      run: |
+        choco install cmake
+name: Setup Qt
+uses: jurplel/install-qt-action@v3
+with:
+  version: '6.6.0'
+  host: 'windows'
+  target: 'desktop'
+  arch: 'win64_msvc2019_64'
+
+      
+name: Build Client
+      run: |
+        cd Client
+        cmake -B build
+        cmake --build build --config Release
+
+      
+name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Havoc-Client-Windows
+        path: Client/build/Release/Havoc.exe
