@@ -1,15 +1,15 @@
 name: Build Havoc Client
-on: 
+on:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-          fetch-depth: 0
 
       - name: Setup Qt
         uses: jurplel/install-qt-action@v3
@@ -18,11 +18,16 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2019_64'
-          modules: 'qtbase qtdeclarative qttools'
 
       - name: Build Havoc Client
         shell: pwsh
         run: |
           cd Client
-          cmake -B build -DCMAKE_PREFIX_PATH="${{ env.Qt6_Dir }}"
+          cmake -B build
           cmake --build build --config Release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Havoc-Client-Windows
+          path: Client/build/Release/Havoc.exe
